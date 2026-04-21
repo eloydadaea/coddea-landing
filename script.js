@@ -75,24 +75,44 @@ const contactForm = document.getElementById('lead-form');
     if (contactForm) {
         contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const submitBtn = contactForm.querySelector('.submit-btn');
             const originalBtnText = submitBtn.textContent;
             submitBtn.textContent = 'Enviando...';
             submitBtn.disabled = true;
 
-            // --- INICIO DE LO NUEVO: FormData atrapa TODO automáticamente ---
+            // 1. Extraer datos básicos
             const data = new FormData(contactForm);
             
+            // 2. OBTENER EL TOKEN DIRECTAMENTE DE CLOUDFLARE (El método infalible)
+            let tokenCloudflare = "";
+            try {
+                if (typeof turnstile !== 'undefined') {
+                    tokenCloudflare = turnstile.getResponse();
+                }
+            } catch (err) {
+                console.log("Error leyendo Turnstile:", err);
+            }
+
+            if (!tokenCloudflare) {
+                formStatus.style.display = 'block';
+                formStatus.className = 'form-status error';
+                formStatus.textContent = 'Por favor, espera a que cargue la verificación de seguridad.';
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+                return; // Detenemos el envío si no hay token
+            }
+
             const formData = {
                 nombre: data.get('nombre'),
                 empresa: data.get('empresa') || 'No especificada',
                 correo: data.get('correo'),
                 telefono: data.get('telefono') || 'No especificado',
                 mensaje: data.get('mensaje'),
-                "cf-turnstile-response": data.get('cf-turnstile-response') || ""
+                "cf-turnstile-response": tokenCloudflare // Usamos el token directo
             };
-            // --- FIN DE LO NUEVO ---
 
+            // 3. Enviar al Backend
             try {
                 const response = await fetch('/api/capture-lead', { 
                     method: 'POST',
@@ -107,8 +127,7 @@ const contactForm = document.getElementById('lead-form');
                     formStatus.className = 'form-status success';
                     formStatus.textContent = result.message || '¡Mensaje enviado con éxito!';
                     contactForm.reset();
-                    // Reiniciar el widget de Cloudflare por si quieren enviar otro mensaje
-                    if (typeof turnstile !== 'undefined') turnstile.reset();
+                    if (typeof turnstile !== 'undefined') turnstile.reset(); // Reinicia el widget
                 } else {
                     formStatus.className = 'form-status error';
                     formStatus.textContent = result.error || 'Ocurrió un error al enviar.';
