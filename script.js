@@ -80,17 +80,15 @@ document.addEventListener("DOMContentLoaded", () => {
             submitBtn.textContent = 'Enviando...';
             submitBtn.disabled = true;
 
-            const formData = {
-                nombre: document.getElementById('nombre').value,
-                empresa: document.getElementById('empresa').value,
-                correo: document.getElementById('correo').value,
-                telefono: document.getElementById('telefono').value,
-                mensaje: document.getElementById('mensaje').value,
-
-                "cf-turnstile-response": document.querySelector('[name="cf-turnstile-response"]').value
-
-
-            };
+           const turnstileElem = document.querySelector('[name="cf-turnstile-response"]');
+        const formData = {
+        nombre: document.getElementById('nombre').value,
+        empresa: document.getElementById('empresa').value,
+        correo: document.getElementById('correo').value,
+        telefono: document.getElementById('telefono').value,
+        mensaje: document.getElementById('mensaje').value,
+        "cf-turnstile-response": turnstileElem ? turnstileElem.value : ""
+        };
 
             try {
                 const response = await fetch('/api/capture-lead', { 
