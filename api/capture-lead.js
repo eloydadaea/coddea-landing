@@ -1,14 +1,13 @@
 import { google } from 'googleapis';
 
 export async function handler(event) {
-    // 1. Configuración de CORS
-    const allowedOrigins = ['https://tudominio.com', 'http://localhost:3000', 'http://127.0.0.1:5500'];
-    const origin = event.headers.origin || event.headers.Origin;
+    console.log("Evento recibido en el Back");
 
     const headers = {
-        'Access-Control-Allow-Origin': allowedOrigins.includes(origin) ? origin : allowedOrigins[0],
+        'Access-Control-Allow-Origin': '*', // Permitir todo para testear
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Content-Type': 'application/json'
     };
 
     if (event.httpMethod === 'OPTIONS') {
@@ -16,52 +15,32 @@ export async function handler(event) {
     }
 
     try {
-        // 2. Extraer datos (incluyendo el token de Turnstile)
         const body = JSON.parse(event.body);
-        const { nombre, empresa, correo, telefono, mensaje } = body;
-        const turnstileToken = body['cf-turnstile-response']; // El token que genera el widget en el front
+        console.log("Cuerpo de la petición procesado");
 
-        // --- VALIDACIÓN DE SEGURIDAD (CLOUDFLARE) ---
+        const turnstileToken = body['cf-turnstile-response'];
+
         if (!turnstileToken) {
-            return { 
-                statusCode: 400, 
-                headers, 
-                body: JSON.stringify({ error: 'Verificación de seguridad ausente.' }) 
-            };
+            console.error("Falta el token de Turnstile");
+            return { statusCode: 400, headers, body: JSON.stringify({ error: 'Falta validación bot' }) };
         }
 
+        // VALIDACIÓN CLOUDFLARE
         const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `secret=${process.env.CLOUDFLARE_TURNSTILE_SECRET}&response=${turnstileToken}`
         });
-
         const verifyData = await verifyRes.json();
-
+        
         if (!verifyData.success) {
-            return { 
-                statusCode: 403, 
-                headers, 
-                body: JSON.stringify({ error: 'Fallo en la verificación de seguridad (Bot detectado).' }) 
-            };
-        }
-        // --- FIN VALIDACIÓN CLOUDFLARE ---
-
-        // 3. Sanitizar los datos para Google Sheets
-        if (!nombre || !correo || !mensaje) {
-            return { statusCode: 400, headers, body: JSON.stringify({ error: 'Faltan campos obligatorios.' }) };
+            console.error("Cloudflare rechazó el token:", verifyData);
+            return { statusCode: 403, headers, body: JSON.stringify({ error: 'Validación bot fallida' }) };
         }
 
-        const sanitize = (str) => str ? str.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
-        const cleanData = {
-            nombre: sanitize(nombre),
-            empresa: sanitize(empresa) || 'No especificada',
-            correo: correo.trim().toLowerCase(),
-            telefono: sanitize(telefono) || 'No especificado',
-            mensaje: sanitize(mensaje)
-        };
+        console.log("Cloudflare validado correctamente");
 
-        // 4. Autenticación con Google Cloud
+        // GOOGLE SHEETS
         const auth = new google.auth.GoogleAuth({
             credentials: {
                 client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -72,37 +51,32 @@ export async function handler(event) {
 
         const sheets = google.sheets({ version: 'v4', auth });
 
-        // 5. Escribir en Google Sheets
         await sheets.spreadsheets.values.append({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
             range: 'Hoja 1!A:F', 
             valueInputOption: 'USER_ENTERED',
             requestBody: {
-                values: [
-                    [
-                        new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' }),
-                        cleanData.nombre,
-                        cleanData.empresa,
-                        cleanData.correo,
-                        cleanData.telefono,
-                        cleanData.mensaje
-                    ]
-                ],
+                values: [[
+                    new Date().toLocaleString('es-PE', { timeZone: 'America/Lima' }),
+                    body.nombre, body.empresa, body.correo, body.telefono, body.mensaje
+                ]],
             },
         });
+
+        console.log("Datos guardados en Sheets con éxito");
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({ success: true, message: '¡Gracias por escribirnos! Te contactaremos pronto.' })
+            body: JSON.stringify({ success: true, message: '¡Recibido!' })
         };
 
     } catch (error) {
-        console.error("Error en el proceso:", error);
+        console.error("ERROR DETALLADO:", error.message);
         return { 
             statusCode: 500, 
             headers, 
-            body: JSON.stringify({ error: 'Error interno del servidor.' }) 
+            body: JSON.stringify({ error: error.message }) 
         };
     }
 }
