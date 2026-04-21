@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     // 4. Lógica del Formulario de Contacto
     // ==========================================
-    const contactForm = document.getElementById('lead-form');
+const contactForm = document.getElementById('lead-form');
     const formStatus = document.getElementById('form-status');
 
     if (contactForm) {
@@ -80,15 +80,18 @@ document.addEventListener("DOMContentLoaded", () => {
             submitBtn.textContent = 'Enviando...';
             submitBtn.disabled = true;
 
-           const turnstileElem = document.querySelector('[name="cf-turnstile-response"]');
-        const formData = {
-        nombre: document.getElementById('nombre').value,
-        empresa: document.getElementById('empresa').value,
-        correo: document.getElementById('correo').value,
-        telefono: document.getElementById('telefono').value,
-        mensaje: document.getElementById('mensaje').value,
-        "cf-turnstile-response": turnstileElem ? turnstileElem.value : ""
-        };
+            // --- INICIO DE LO NUEVO: FormData atrapa TODO automáticamente ---
+            const data = new FormData(contactForm);
+            
+            const formData = {
+                nombre: data.get('nombre'),
+                empresa: data.get('empresa') || 'No especificada',
+                correo: data.get('correo'),
+                telefono: data.get('telefono') || 'No especificado',
+                mensaje: data.get('mensaje'),
+                "cf-turnstile-response": data.get('cf-turnstile-response') || ""
+            };
+            // --- FIN DE LO NUEVO ---
 
             try {
                 const response = await fetch('/api/capture-lead', { 
@@ -104,6 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     formStatus.className = 'form-status success';
                     formStatus.textContent = result.message || '¡Mensaje enviado con éxito!';
                     contactForm.reset();
+                    // Reiniciar el widget de Cloudflare por si quieren enviar otro mensaje
+                    if (typeof turnstile !== 'undefined') turnstile.reset();
                 } else {
                     formStatus.className = 'form-status error';
                     formStatus.textContent = result.error || 'Ocurrió un error al enviar.';
@@ -119,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
     // ==========================================
     // 5. Gestión del Banner de Cookies (CORREGIDO)
     // ==========================================
