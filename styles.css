@@ -1,0 +1,107 @@
+/* ==========================================
+   ESTILOS PARA PÁGINA DE PRIVACIDAD
+   ========================================== */
+
+body.privacy-page {
+    /* Mantiene el fondo oscuro de la landing */
+    background: linear-gradient(135deg, var(--bg-dark-left) 0%, var(--bg-dark-right) 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 4rem 5%;
+}
+
+.privacy-container {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+    max-width: 800px;
+    width: 100%;
+    padding: 4rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.privacy-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 2rem;
+}
+
+.privacy-header .logo {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.privacy-header h1 {
+    font-size: 2.2rem;
+    color: var(--text-white);
+    margin-bottom: 0.5rem;
+}
+
+.last-updated {
+    color: var(--primary-orange);
+    font-size: 0.95rem;
+}
+
+.privacy-content h2 {
+    color: var(--text-white);
+    font-size: 1.4rem;
+    margin: 2.5rem 0 1rem;
+    font-weight: 600;
+}
+
+.privacy-content p {
+    color: var(--text-gray);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+}
+
+.privacy-content ul {
+    color: var(--text-gray);
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.privacy-content ul li {
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+}
+
+.privacy-content strong {
+    color: var(--text-white);
+}
+
+.privacy-footer {
+    margin-top: 4rem;
+    text-align: center;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-orange);
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.back-link:hover {
+    color: #d9621b;
+    transform: translateX(-5px); /* Efecto de flecha hacia atrás */
+}
+
+/* Responsividad para la página de privacidad */
+@media (max-width: 768px) {
+    .privacy-container {
+        padding: 2.5rem 1.5rem;
+    }
+    
+    .privacy-header h1 {
+        font-size: 1.8rem;
+    }
+}
