@@ -445,7 +445,7 @@ h1 {
 
 .phone-mockup {
     width: 100%;
-    max-width: 350px; /* Tamaño máximo para que el celular no se vea gigante */
+    max-width: 600px; /* Tamaño máximo para que el celular no se vea gigante */
     height: auto;
     filter: drop-shadow(-10px 20px 40px rgba(0, 0, 0, 0.5));
     transition: transform 0.5s ease;
