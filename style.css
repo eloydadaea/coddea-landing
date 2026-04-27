@@ -412,6 +412,14 @@ h1 {
 
 
 /* --- Sección de Proyectos --- */
+
+/* Estilos para los enlaces de las tarjetas de proyectos */
+.project-link {
+    text-decoration: none; /* Quita el subrayado */
+    color: inherit;        /* Mantiene el color original de tu texto (blanco/gris) */
+    display: block;        /* Hace que el enlace cubra todo el espacio de la tarjeta */
+}
+
 .projects-section {
     padding: 6rem 5% 4rem;
     min-height: 100vh;
