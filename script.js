@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ==========================================
     // 1. Animación inicial del Hero (Entrada)
-    // ==========================================
+
     const heroContent = document.querySelector('.hero-content');
     const heroImage = document.querySelector('.hero-image');
 
@@ -23,9 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
     }
 
-    // ==========================================
     // 2. Animación al hacer Scroll (Tarjetas)
-    // ==========================================
+
     const reveals = document.querySelectorAll('.reveal');
     const revealOptions = {
         threshold: 0.15,
@@ -45,9 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
         revealOnScroll.observe(reveal);
     });
 
-    // ==========================================
     // 3. Menú Inteligente (Scrollspy)
-    // ==========================================
+
     const menuLinks = document.querySelectorAll('nav a');
     const sections = document.querySelectorAll('section[id]'); 
 
@@ -66,9 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sections.forEach(section => scrollSpyObserver.observe(section));
 
-    // ==========================================
-    // 4. Lógica del Formulario de Contacto
-    // ==========================================
+    // 4. Formulario de Contacto
+
 const contactForm = document.getElementById('lead-form');
     const formStatus = document.getElementById('form-status');
 
@@ -143,9 +139,7 @@ const contactForm = document.getElementById('lead-form');
             }
         });
     }
-    // ==========================================
-    // 5. Gestión del Banner de Cookies (CORREGIDO)
-    // ==========================================
+
     const cookieBanner = document.getElementById('cookie-banner');
     
     // 1. Comprobamos si ya aceptó al cargar
