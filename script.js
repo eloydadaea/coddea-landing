@@ -159,4 +159,37 @@ const contactForm = document.getElementById('lead-form');
             });
         }
     }
+
+
+    // ==========================================
+// Menú de Navegación Móvil
+// ==========================================
+    // ==========================================
+// Menú de Navegación Móvil (Versión Segura FontAwesome)
+// ==========================================
+const mobileBtn = document.querySelector('.mobile-menu-btn');
+const navMenu = document.querySelector('nav');
+
+if (mobileBtn) {
+    mobileBtn.addEventListener('click', () => {
+        // 1. Abre o cierra el menú desplegable
+        navMenu.classList.toggle('active');
+        
+        // 2. Reescribe el icono forzando a FontAwesome a redibujarlo
+        if (navMenu.classList.contains('active')) {
+            mobileBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>'; // Icono X
+        } else {
+            mobileBtn.innerHTML = '<i class="fa-solid fa-bars"></i>'; // Icono Hamburguesa
+        }
+    });
+
+    // 3. Cierra el menú automáticamente cuando tocas un enlace
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            mobileBtn.innerHTML = '<i class="fa-solid fa-bars"></i>'; // Vuelve a la Hamburguesa
+        });
+    });
+}
 });

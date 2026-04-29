@@ -23,7 +23,11 @@ body {
     color: var(--text-white);
     min-height: 100vh;
     overflow-x: hidden;
-}
+
+    /* El bloqueo absoluto del scroll horizontal */
+    overflow-x: hidden;
+    width: 100%; /* Cambiamos 100vw por 100% */
+    max-width: 100%;
 
 /* Header & Navegación */
 header {
@@ -244,6 +248,15 @@ h1 {
 
 
 
+/* Botón de Menú Móvil (Oculto en PC) */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-white);
+    font-size: 1.8rem;
+    cursor: pointer;
+}
 
 /* --- Media Queries (Responsividad) --- */
 @media (max-width: 992px) {
@@ -262,11 +275,35 @@ h1 {
         justify-content: center;
     }
     header {
-        flex-direction: column;
-        gap: 1.5rem;
+        flex-direction: row; /* Mantiene logo a la izquierda y botón a la derecha */
+        position: relative; /* Clave para anclar el menú desplegable */
+    }
+    .mobile-menu-btn {
+        display: unset; /* Hace visible el botón de hamburguesa */
     }
     nav a {
-        margin: 0 1rem;
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    /* Esta clase se activará con JavaScript */
+    nav.active {
+        display: flex; 
+    }
+    nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: var(--bg-dark-left); /* Usa tu color de fondo oscuro */
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 0;
+        gap: 2rem;
+        display: none; /* Oculto por defecto */
+        z-index: 999;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     .whatsapp-btn {
         left: 20px;
@@ -276,12 +313,7 @@ h1 {
 
 @media (max-width: 600px) {
     h1 { font-size: 2.2rem; }
-    nav { 
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-    }
+  
     .buttons {
         flex-direction: column;
     }
@@ -397,6 +429,12 @@ h1 {
 @media (max-width: 992px) {
     .services-grid {
         grid-template-columns: repeat(2, 1fr); /* Pasa a 2 columnas */
+    }
+
+    .mockup-img {
+        transform: scale(1); /* Quitamos el zoom extra en celulares */
+        width: 90%; /* Le damos un margen de seguridad */
+        margin: 0 auto; /* La centramos */
     }
 }
 
@@ -520,7 +558,33 @@ h1 {
 }
 
 
+/* --- Responsividad para Proyectos (Móviles y Tablets) --- */
+@media (max-width: 992px) {
+    .projects-container {
+        flex-direction: column; /* Apila izquierda y derecha verticalmente */
+        text-align: center;
+        gap: 2rem;
+    }
 
+    .projects-left {
+        align-items: center; /* Centra el título y el celular */
+    }
+
+    .projects-right {
+        width: 100%;
+    }
+
+    .phone-mockup {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .projects-grid {
+        grid-template-columns: 1fr; /* Pasa las tarjetas a 1 sola columna en teléfonos */
+        gap: 1.5rem;
+    }
+}
 /* --- Sección Contáctanos --- */
 .contact-section {
     padding: 6rem 5% 6rem;
@@ -677,9 +741,20 @@ h1 {
 
 /* --- Media Queries --- */
 @media (max-width: 992px) {
-    .contact-container {
-        flex-direction: column-reverse; /* Pone el texto arriba y el formulario abajo en móviles */
+   .contact-container {
+        flex-direction: column-reverse; /* Pone el texto arriba y el formulario abajo */
         gap: 3rem;
+        align-items: stretch; /* ¡Esta es la magia que estira todo al 100%! */
+    }
+    
+    .contact-form-wrapper,
+    .contact-text-wrapper {
+        width: 100%; /* Fuerza a las columnas a ocupar todo el ancho */
+    }
+    
+    .contact-text-wrapper {
+        padding-top: 0;
+        text-align: center;
     }
     
     .contact-text-wrapper {
@@ -854,4 +929,11 @@ h1 {
     border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
+}
+
+/* Evita que el widget de seguridad empuje la pantalla en móviles */
+.cf-turnstile {
+    max-width: 100%;
+    overflow: hidden;
+}
 }
